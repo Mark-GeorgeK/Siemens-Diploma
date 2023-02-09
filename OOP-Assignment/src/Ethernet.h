@@ -36,6 +36,12 @@ public:
 
 class EnhancedEthernetPacket : public EthernetPacket {
 public:
+	uint8_t header_;
+	uint8_t msgType_;
+	uint16_t payloadSize_;
+	uint16_t rtcID_;
+	uint16_t seqID_;
+
 	void getDataBlock(vector<uint8_t>& bytes) override;
 	void printPacket(ofstream& file) override;
 };

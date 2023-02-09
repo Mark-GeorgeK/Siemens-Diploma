@@ -3,11 +3,11 @@ FB555555555555D500000C1ECCD65557D9AEFE10201480680809000011D1001000FFFE7E40000000
 CRC: B329AA60
 Concatenation Indicator: 0
 Destination Address: 00000C1
-Message Type: AE
-Payload Size: 002E
+Message Type: 02
+Payload Size: 0014
 Protocol Version: 1
-RTC ID: B329AA60
-Sequence ID: B329AA60
+RTC ID: 8068
+Sequence ID: 0080
 Source Address: ECCD65557D9
 Type: AEFE
 
@@ -18,11 +18,11 @@ FB555555555555D500000C1ECCD65557D9AEFE102014806818090004011D1001000FFFE7E4000000
 CRC: 99AC762B
 Concatenation Indicator: 0
 Destination Address: 00000C1
-Message Type: AE
-Payload Size: 002E
+Message Type: 02
+Payload Size: 0014
 Protocol Version: 1
-RTC ID: 99AC762B
-Sequence ID: 99AC762B
+RTC ID: 8068
+Sequence ID: 0180
 Source Address: ECCD65557D9
 Type: AEFE
 
@@ -42,11 +42,11 @@ FB555555555555D500000C1ECCD65557D9AEFE102014806828090010011D1001000FFFE7E4000000
 CRC: 20691304
 Concatenation Indicator: 0
 Destination Address: 00000C1
-Message Type: AE
-Payload Size: 002E
+Message Type: 02
+Payload Size: 0014
 Protocol Version: 1
-RTC ID: 20691304
-Sequence ID: 20691304
+RTC ID: 8068
+Sequence ID: 0280
 Source Address: ECCD65557D9
 Type: AEFE
 
@@ -75,11 +75,11 @@ FB555555555555D500000C1ECCD65557D9AEFE1020148068380900104011D1001000FFFE7E400000
 CRC: 0AECCF4F
 Concatenation Indicator: 0
 Destination Address: 00000C1
-Message Type: AE
-Payload Size: 002E
+Message Type: 02
+Payload Size: 0014
 Protocol Version: 1
-RTC ID: AECCF4F
-Sequence ID: AECCF4F
+RTC ID: 8068
+Sequence ID: 0380
 Source Address: ECCD65557D9
 Type: AEFE
 
@@ -90,11 +90,11 @@ FB555555555555D500000C1ECCD65557D9AEFE102014806848090020011D1001000FFFE7E4000000
 CRC: 95A8D8A9
 Concatenation Indicator: 0
 Destination Address: 00000C1
-Message Type: AE
-Payload Size: 002E
+Message Type: 02
+Payload Size: 0014
 Protocol Version: 1
-RTC ID: 95A8D8A9
-Sequence ID: 95A8D8A9
+RTC ID: 8068
+Sequence ID: 0480
 Source Address: ECCD65557D9
 Type: AEFE
 
@@ -105,11 +105,11 @@ FB555555555555D500000C1ECCD65557D9AEFE1020148068580900204011D1001000FFFE7E400000
 CRC: BF2D04E2
 Concatenation Indicator: 0
 Destination Address: 00000C1
-Message Type: AE
-Payload Size: 002E
+Message Type: 02
+Payload Size: 0014
 Protocol Version: 1
-RTC ID: BF2D04E2
-Sequence ID: BF2D04E2
+RTC ID: 8068
+Sequence ID: 0580
 Source Address: ECCD65557D9
 Type: AEFE
 
@@ -129,11 +129,11 @@ FB555555555555D500000C1ECCD65557D9AEFE102014806868090030011D1001000FFFE7E4000000
 CRC: 06E861CD
 Concatenation Indicator: 0
 Destination Address: 00000C1
-Message Type: AE
-Payload Size: 002E
+Message Type: 02
+Payload Size: 0014
 Protocol Version: 1
-RTC ID: 6E861CD
-Sequence ID: 6E861CD
+RTC ID: 8068
+Sequence ID: 0680
 Source Address: ECCD65557D9
 Type: AEFE
 
@@ -144,11 +144,11 @@ FB555555555555D500000C1ECCD65557D9AEFE1020148068780900304011D1001000FFFE7E400000
 CRC: 2C6DBD86
 Concatenation Indicator: 0
 Destination Address: 00000C1
-Message Type: AE
-Payload Size: 002E
+Message Type: 02
+Payload Size: 0014
 Protocol Version: 1
-RTC ID: 2C6DBD86
-Sequence ID: 2C6DBD86
+RTC ID: 8068
+Sequence ID: 0780
 Source Address: ECCD65557D9
 Type: AEFE
 
@@ -159,11 +159,11 @@ FB555555555555D500000C1ECCD65557D9AEFE102014806888090040011D1001000FFFE7E4000000
 CRC: BE2D3E29
 Concatenation Indicator: 0
 Destination Address: 00000C1
-Message Type: AE
-Payload Size: 002E
+Message Type: 02
+Payload Size: 0014
 Protocol Version: 1
-RTC ID: BE2D3E29
-Sequence ID: BE2D3E29
+RTC ID: 8068
+Sequence ID: 0880
 Source Address: ECCD65557D9
 Type: AEFE
 
@@ -192,11 +192,11 @@ FB555555555555D500000C1ECCD65557D9AEFE1020148068980900404011D1001000FFFE7E400000
 CRC: 94A8E262
 Concatenation Indicator: 0
 Destination Address: 00000C1
-Message Type: AE
-Payload Size: 002E
+Message Type: 02
+Payload Size: 0014
 Protocol Version: 1
-RTC ID: 94A8E262
-Sequence ID: 94A8E262
+RTC ID: 8068
+Sequence ID: 0980
 Source Address: ECCD65557D9
 Type: AEFE
 
