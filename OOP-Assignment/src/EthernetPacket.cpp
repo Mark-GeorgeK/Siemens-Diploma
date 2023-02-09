@@ -1,12 +1,20 @@
 #include "Ethernet.h"
 
-EthernetPacket* EthernetPacket::getEthernetPacketInstance(uint16_t ethertype) {
-	if (ethertype == RawEthernetCode) return new RawEthernetPacket();
-	else if (ethertype == EnhancedEthernetCode) return new EnhancedEthernetPacket();
+EthernetPacket *EthernetPacket::getEthernetPacketInstance(uint16_t ethertype)
+{
+	if (ethertype == RawEthernetCode)
+		return new RawEthernetPacket();
+	else if (ethertype == EnhancedEthernetCode)
+		return new EnhancedEthernetPacket();
 	// else error
+	else
+	{
+		return 0;
+	}
 }
 
-void EthernetPacket::parsePacket(vector<uint8_t>& bytes) {
+void EthernetPacket::parsePacket(vector<uint8_t> &bytes)
+{
 	// Extract the preamble
 	copy(bytes.begin(), bytes.begin() + 8, preamble_.begin());
 

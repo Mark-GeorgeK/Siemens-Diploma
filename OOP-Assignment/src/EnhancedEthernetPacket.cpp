@@ -1,6 +1,7 @@
 #include "Ethernet.h"
 
-void EnhancedEthernetPacket::getDataBlock(vector<uint8_t>& bytes) {
+void EnhancedEthernetPacket::getDataBlock(vector<uint8_t> &bytes)
+{
 	vector<uint8_t> data(bytes.begin() + 22, bytes.end() - 4);
 	data_ = data;
 	header_ = data_[0];
@@ -10,7 +11,8 @@ void EnhancedEthernetPacket::getDataBlock(vector<uint8_t>& bytes) {
 	seqID_ = (data_[6] << 8) | data_[7];
 }
 
-void EnhancedEthernetPacket::printPacket(ofstream& file) {
+void EnhancedEthernetPacket::printPacket(ofstream &file)
+{
 	file << "CRC: " << setw(8) << (int)fcs_ << endl;
 	file << "Concatenation Indicator: 0" << endl;
 	file << "Destination Address: " << setw(4);
@@ -30,5 +32,6 @@ void EnhancedEthernetPacket::printPacket(ofstream& file) {
 	file << endl;
 	for (int i = 0; i < 230; i++)
 		file << "*";
-	file << endl << endl;
+	file << endl
+	     << endl;
 }

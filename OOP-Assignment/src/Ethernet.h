@@ -13,7 +13,8 @@
 
 using namespace std;
 
-class EthernetPacket {
+class EthernetPacket
+{
 public:
 	array<uint8_t, 8> preamble_;
 	array<uint8_t, 6> destination_;
@@ -22,19 +23,21 @@ public:
 	vector<uint8_t> data_;
 	uint32_t fcs_;
 
-	static EthernetPacket* getEthernetPacketInstance(uint16_t ethertype);
-	void parsePacket(vector<uint8_t>& bytes);
-	virtual void getDataBlock(vector<uint8_t>& bytes) = 0;
-	virtual void printPacket(ofstream& file) = 0;
+	static EthernetPacket *getEthernetPacketInstance(uint16_t ethertype);
+	void parsePacket(vector<uint8_t> &bytes);
+	virtual void getDataBlock(vector<uint8_t> &bytes) = 0;
+	virtual void printPacket(ofstream &file) = 0;
 };
 
-class RawEthernetPacket : public EthernetPacket {
+class RawEthernetPacket : public EthernetPacket
+{
 public:
-	void getDataBlock(vector<uint8_t>& bytes) override;
-	void printPacket(ofstream& file) override;
+	void getDataBlock(vector<uint8_t> &bytes) override;
+	void printPacket(ofstream &file) override;
 };
 
-class EnhancedEthernetPacket : public EthernetPacket {
+class EnhancedEthernetPacket : public EthernetPacket
+{
 public:
 	uint8_t header_;
 	uint8_t msgType_;
@@ -42,16 +45,18 @@ public:
 	uint16_t rtcID_;
 	uint16_t seqID_;
 
-	void getDataBlock(vector<uint8_t>& bytes) override;
-	void printPacket(ofstream& file) override;
+	void getDataBlock(vector<uint8_t> &bytes) override;
+	void printPacket(ofstream &file) override;
 };
 
-class Scanner {
+class Scanner
+{
 public:
-	static void readPacketsFromFile(const string& filename, vector<EthernetPacket*>& packets_);
+	static void readPacketsFromFile(const string &filename, vector<EthernetPacket *> &packets_);
 };
 
-class Printer {
+class Printer
+{
 public:
-	static void writePacketsToFile(const string& filename, vector<EthernetPacket*>& packets_);
+	static void writePacketsToFile(const string &filename, vector<EthernetPacket *> &packets_);
 };
