@@ -1,124 +1,190 @@
-// should be the main Class
 #include "Ethernet.h"
-#include <stdio.h>
-#include <array>
-#include <vector>
-#include <cstdint>
-#include <fstream>
-#include <iostream>
 
-using namespace std;
+class EthernetPacket {
+public:
+	array<uint8_t, 8> preamble_;
+	array<uint8_t, 6> destination_;
+	array<uint8_t, 6> source_;
+	uint16_t ethertype_;
+	vector<uint8_t> data_;
+	uint32_t fcs_;
 
-class Ethernet
+	// Circular dependency problem to be resolved..
+	//static EthernetPacket* getEthernetPacketInstance(uint16_t ethertype) {
+	//	if (ethertype == RawEthernetCode) return new RawEthernetPacket();
+	//	else if (ethertype == EnhancedEthernetCode) return new EnhancedEthernetPacket();
+	//	// else error
+	//}
+
+	void parsePacket(vector<uint8_t>& bytes) {
+		// Extract the preamble
+		copy(bytes.begin(), bytes.begin() + 8, preamble_.begin());
+
+		// Extract the destination
+		copy(bytes.begin() + 8, bytes.begin() + 14, destination_.begin());
+
+		// Extract the source
+		copy(bytes.begin() + 14, bytes.begin() + 20, source_.begin());
+
+		// Extract the ethertype
+		ethertype_ = (bytes[20] << 8) | bytes[21];
+
+		// Extract the data
+		getDataBlock(bytes);
+
+		// Extract the FCS
+		fcs_ = (bytes[bytes.size() - 4] << 24) | (bytes[bytes.size() - 3] << 16) | (bytes[bytes.size() - 2] << 8) | bytes[bytes.size() - 1];
+	}
+
+	// Cannot instantiate object problem to be resolved..
+	virtual void getDataBlock(vector<uint8_t>& bytes) = 0;
+	virtual void printPacket(ofstream& file) = 0;
+	//void virtual getDataBlock(vector<uint8_t>& bytes) {}
+	//void virtual printPacket(ofstream& file) {}
+};
+
+class RawEthernetPacket : public EthernetPacket {
+public:
+	void getDataBlock(vector<uint8_t>& bytes) override {
+		vector<uint8_t> data(bytes.begin() + 22, bytes.end() - 4);
+		data_ = data;
+	}
+
+	void printPacket(ofstream& file) override {
+		file << "CRC: " << setw(8) << (int)fcs_ << endl;
+		file << "Destination Address: " << setw(4);
+		for (int j = 0; j < 6; j += 2)
+			file << (int)((destination_[j] << 8) | destination_[j + 1]);
+		file << endl;
+		file << "Source Address: " << setw(4);
+		for (int j = 0; j < 6; j += 2)
+			file << (int)((source_[j] << 8) | source_[j + 1]);
+		file << endl;
+		file << "Type: " << setw(4) << (int)ethertype_ << endl;
+		file << endl;
+		for (int i = 0; i < 230; i++)
+			file << "*";
+		file << endl << endl;
+	}
+};
+
+class EnhancedEthernetPacket : public EthernetPacket {
+public:
+	void getDataBlock(vector<uint8_t>& bytes) override {
+		// change..
+		vector<uint8_t> data(bytes.begin() + 22, bytes.end() - 4);
+		data_ = data;
+	}
+
+	void printPacket(ofstream& file) override {
+		file << "CRC: " << setw(8) << (int)fcs_ << endl;
+		file << "Concatenation Indicator: 0" << endl;
+		file << "Destination Address: " << setw(4);
+		for (int j = 0; j < 6; j += 2)
+			file << (int)((destination_[j] << 8) | destination_[j + 1]);
+		file << endl;
+		file << "Message Type: " << setw(2) << ((ethertype_ & 0xFF00) >> 8) << endl;
+		file << "Payload Size: " << setw(4) << data_.size() << endl;
+		file << "Protocol Version: 1" << endl;
+		file << "RTC ID: " << setw(4) << (int)fcs_ << endl;
+		file << "Sequence ID: " << setw(4) << (int)fcs_ << endl;
+		file << "Source Address: " << setw(4);
+		for (int j = 0; j < 6; j += 2)
+			file << (int)((source_[j] << 8) | source_[j + 1]);
+		file << endl;
+		file << "Type: " << setw(4) << (int)ethertype_ << endl;
+		file << endl;
+		for (int i = 0; i < 230; i++)
+			file << "*";
+		file << endl << endl;
+	}
+};
+
+// Global function
+EthernetPacket* getEthernetPacketInstance(uint16_t ethertype) {
+	if (ethertype == RawEthernetCode) return new RawEthernetPacket();
+	else if (ethertype == EnhancedEthernetCode) return new EnhancedEthernetPacket();
+	// else error
+}
+
+class Scanner
 {
 public:
-    Ethernet(const array<uint8_t, 8> &preamble, const array<uint8_t, 6> &destination, const array<uint8_t, 6> &source, uint16_t ethertype,
-             const vector<uint8_t> &data, uint32_t fcs)
-        : preamble_{preamble}, destination_{destination}, source_{source}, ethertype_{ethertype}, data_{data}, fcs_{fcs} {}
+	static void readPacketsFromFile(const string& filename, vector<EthernetPacket>& packets_)
+	{
+		ifstream file(filename);
+		if (!file.is_open())
+		{
+			cout << "Error: Failed to open file " << filename << endl;
+			return;
+		}
 
-    void readPacketsFromFile(const string &filename)
-    {
-        ifstream file(filename);
-        if (file.is_open())
-        {
-            string line;
-            while (getline(file, line))
-            {
-                if (line.length() < 60 || line.length() > 1514) // packet size out of range
-                {
-                    cout << "Packet size error: Packet size must be between 60 and 1514 bytes" << endl;
-                    continue;
-                }
+		string line;
+		while (getline(file, line))
+		{
+			if (line.length() < minPacketSize || line.length() > maxPacketSize) // packet size out of range
+			{
+				cout << "Packet size error: Packet size must be between " << minPacketSize << " and " << maxPacketSize << " bytes" << endl;
+				continue;
+			}
 
-                vector<uint8_t> bytes;
-                for (int i = 0; i < line.length(); i += 2)
-                {
-                    uint8_t byte = static_cast<uint8_t>(stoul(line.substr(i, 2), nullptr, 16));
-                    bytes.push_back(byte);
-                }
+			// Scan line
+			vector<uint8_t> bytes;
+			for (int i = 0; i < line.length(); i += 2)
+			{
+				uint8_t byte = static_cast<uint8_t>(stoul(line.substr(i, 2), nullptr, 16));
+				bytes.push_back(byte);
+			}
 
-                // Extract the preamble
-                array<uint8_t, 8> preamble;
-                copy(bytes.begin(), bytes.begin() + 8, preamble.begin());
+			// Extract the ethertype
+			uint16_t ethertype = (bytes[20] << 8) | bytes[21];
 
-                // Extract the destination
-                array<uint8_t, 6> destination;
-                copy(bytes.begin() + 8, bytes.begin() + 14, destination.begin());
+			//EthernetPacket* ethernetPacket = EthernetPacket::getEthernetPacketInstance(ethertype);
+			EthernetPacket* ethernetPacket = getEthernetPacketInstance(ethertype);
+			ethernetPacket->parsePacket(bytes);
 
-                // Extract the source
-                array<uint8_t, 6> source;
-                copy(bytes.begin() + 14, bytes.begin() + 20, source.begin());
-
-                // Extract the ethertype
-                uint16_t ethertype = (bytes[20] << 8) | bytes[21];
-
-                // Extract the data
-                vector<uint8_t> data(bytes.begin() + 22, bytes.end() - 4);
-
-                // Extract the FCS
-                uint32_t fcs = (bytes[bytes.size() - 4] << 24) | (bytes[bytes.size() - 3] << 16) | (bytes[bytes.size() - 2] << 8) | bytes[bytes.size() - 1];
-
-                // Add the packet to the list of packets
-                packets_.push_back(Ethernet(preamble, destination, source, ethertype, data, fcs));
-            }
-        }
-        else
-        {
-            cout << "Error: Failed to open file " << filename << endl;
-        }
-    }
-
-    void writePacketsToFile(const string &filename)
-    {
-        ofstream file(filename);
-        if (file.is_open())
-        {
-            for (int i = 0; i < packets_.size(); ++i)
-            {
-                file << "Packet # " << i << ":" << endl;
-                file << hex << setfill('0') << setw(2);
-                for (uint8_t byte : packets_[i].preamble_)
-                    file << (int)byte;
-                for (uint8_t byte : packets_[i].destination_)
-                    file << (int)byte;
-                for (uint8_t byte : packets_[i].source_)
-                    file << (int)byte;
-                file << setw(4) << (int)packets_[i].ethertype_;
-                for (uint8_t byte : packets_[i].data_)
-                    file << (int)byte;
-                file << setw(8) << (int)packets_[i].fcs_ << endl;
-
-                file << "CRC: " << hex << setfill('0') << setw(8) << (int)packets_[i].fcs_ << endl;
-                file << "Concatenation Indicator: 0" << endl;
-                file << "Destination Address: " << hex << setfill('0') << setw(4);
-                for (int j = 0; j < 6; j += 2)
-                    file << (int)((packets_[i].destination_[j] << 8) | packets_[i].destination_[j + 1]);
-                file << endl;
-                file << "Message Type: " << hex << setfill('0') << setw(2) << ((packets_[i].ethertype_ & 0xFF00) >> 8) << endl;
-                file << "Payload Size: " << hex << setfill('0') << setw(4) << packets_[i].data_.size() << endl;
-                file << "Protocol Version: 1" << endl;
-                file << "RTC ID: " << hex << setfill('0') << setw(4) << (int)packets_[i].fcs_ << endl;
-                file << "Sequence ID: " << hex << setfill('0') << setw(4) << (int)packets_[i].fcs_ << endl;
-                file << "Source Address: " << hex << setfill('0') << setw(4);
-                for (int j = 0; j < 6; j += 2)
-                    file << (int)((packets_[i].source_[j] << 8) | packets_[i].source_[j + 1]);
-                file << endl;
-                file << "Type: " << hex << setfill('0') << setw(4) << (int)packets_[i].ethertype_ << endl
-                     << endl;
-            }
-        }
-        else
-        {
-            cout << "Error: Failed to open file " << filename << endl;
-        }
-    }
-
-private:
-    vector<Ethernet> packets_;
-    array<uint8_t, 8> preamble_;
-    array<uint8_t, 6> destination_;
-    array<uint8_t, 6> source_;
-    uint16_t ethertype_;
-    vector<uint8_t> data_;
-    uint32_t fcs_;
+			// Add the packet to the list of packets
+			packets_.push_back(*ethernetPacket);
+		}
+	}
 };
+
+class Printer {
+public:
+	static void writePacketsToFile(const string& filename, vector<EthernetPacket>& packets_)
+	{
+		ofstream file(filename);
+		if (!file.is_open())
+		{
+			cout << "Error: Failed to open file " << filename << endl;
+			return;
+		}
+
+		for (int i = 0; i < packets_.size(); ++i)
+		{
+			file << "Packet # " << i << ":" << endl;
+			file << uppercase << hex << setfill('0') << setw(2);
+			for (uint8_t byte : packets_[i].preamble_)
+				file << (int)byte;
+			for (uint8_t byte : packets_[i].destination_)
+				file << (int)byte;
+			for (uint8_t byte : packets_[i].source_)
+				file << (int)byte;
+			file << setw(4) << (int)packets_[i].ethertype_;
+			for (uint8_t byte : packets_[i].data_)
+				file << (int)byte;
+			file << setw(8) << (int)packets_[i].fcs_ << endl;
+
+			packets_[i].printPacket(file);
+		}
+	}
+};
+
+// Driver code
+int main() {
+	string input_file = "input_packets";
+	string output_file = "output";
+	vector<EthernetPacket> packets_;
+	Scanner::readPacketsFromFile(input_file, packets_);
+	Printer::writePacketsToFile(output_file, packets_);
+}
