@@ -1,0 +1,3 @@
+/Users/davidwagih/Documents/Siemens-Diploma/make-starter/CMakeFiles/calc.dir
+/Users/davidwagih/Documents/Siemens-Diploma/make-starter/CMakeFiles/edit_cache.dir
+/Users/davidwagih/Documents/Siemens-Diploma/make-starter/CMakeFiles/rebuild_cache.dir
