@@ -3,3 +3,4 @@
 .fake
 build/
 .cache
+.vscode
